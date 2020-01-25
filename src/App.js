@@ -36,9 +36,11 @@ function App() {
   async function getUserVacations(user){
     console.log("In getUserVacations")
     console.log(user);
-    const vacations = (await axios.get(`${API}/users/${user.id}/vacations`)).data
+    const vacationsAPI = `${API}/users/${user.id}/vacations`;
+    console.log(vacationsAPI);
+    const vacations = (await axios.get(`${vacationsAPI}`)).data
 
-    console.log("Vacations for `${user.id}`", vacations[0]);
+    console.log("Vacations for ",user.id, vacations);
     return vacations;
   }
 
