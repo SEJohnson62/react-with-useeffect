@@ -33,12 +33,23 @@ function App() {
     .then( user => setUser(user));
   }, [user.id]);
 
+  function createUserVacation () {
+    console.log("Start: ", startText);
+    console.log("End: ", endText);
+  }
   return (
     <div className="App">
       <header className="App-header">
         <h1>Acme Vacation Planner for {user.fullName}</h1>
-        <button onClick={(ev) => console.log("Button click")}>Get User</button>
+        <input value={startText} onChange={(ev)=>setStartText(ev.target.value)}/>
+        <input value={endText} onChange={(ev)=>setEndText(ev.target.value)}/>
+        <button onClick={ createUserVacation }>Get User</button>
       </header>
+      <ul>
+        {
+          <li>{user.id}</li>
+        }
+      </ul>
     </div>
   );
 }
