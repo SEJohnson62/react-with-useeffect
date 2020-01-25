@@ -1,5 +1,6 @@
 import React, { useState, useEffect} from 'react';
 import axios from 'axios';
+import moment from 'moment';
 import './App.css';
 
 const API = 'https://acme-users-api-rev.herokuapp.com/api';
@@ -34,8 +35,14 @@ function App() {
   }, [user.id]);
 
   function createUserVacation () {
+    ev.preventDefault();
+    const vacation = {
+      startDate: {startText},
+      endDate: {endText},
+    }
     console.log("Start: ", startText);
     console.log("End: ", endText);
+    axios.post(`${API}/users/${user.id}/vacations`, `${vacation.startDate - vacation.endDate}`)
   }
   return (
     <div className="App">
