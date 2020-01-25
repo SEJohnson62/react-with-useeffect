@@ -6,6 +6,8 @@ import './App.css';
 const API = 'https://acme-users-api-rev.herokuapp.com/api';
 
 const fetchUser = async ()=> {
+  console.log("in fetchUser");
+  //given code
   const storage = window.localStorage;
   const userId = storage.getItem('userId');
   if(userId){
@@ -22,19 +24,41 @@ const fetchUser = async ()=> {
   return  user;
 };
 
+
+
 function App() {
   const [ count, setCount ] = useState(0);
   const [user, setUser ] = useState('');
   const [startText, setStartText ] = useState('');
   const [endText, setEndText ] = useState('');
+  const [vacations, setVacations ] = useState([]);
+
+  async function getUserVacations(user){
+    console.log("In getUserVacations")
+    console.log(user);
+    const vacations = (await axios.get(`${API}/users/${user.id}/vacations`)).data
+
+    console.log("Vacations for `${user.id}`", vacations[0]);
+    return vacations;
+  }
 
   useEffect(()=> {
-    console.log("In useEffect");
+    console.log("In useEffect1");
     fetchUser()
     .then( user => setUser(user));
-  }, [user.id]);
+  }, []);
 
-  function createUserVacation () {
+  useEffect(()=> {
+    console.log("In useEffect2");
+    if( user.id ){
+      getUserVacations(user);
+      return vacations;
+    }
+  }, [user]);
+
+  console.log(vacations)
+
+  function createUserVacation (ev) {
     ev.preventDefault();
     const vacation = {
       startDate: {startText},
@@ -42,8 +66,11 @@ function App() {
     }
     console.log("Start: ", startText);
     console.log("End: ", endText);
+    /*
     axios.post(`${API}/users/${user.id}/vacations`, `${vacation.startDate - vacation.endDate}`)
+    .then( response => setUser([...vacations], response.data]))*/
   }
+
   return (
     <div className="App">
       <header className="App-header">
