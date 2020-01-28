@@ -6,7 +6,6 @@ import './App.css';
 const API = 'https://acme-users-api-rev.herokuapp.com/api';
 
 const fetchUser = async ()=> {
-  console.log("in fetchUser");
   //given code
   const storage = window.localStorage;
   const userId = storage.getItem('userId');
@@ -24,41 +23,44 @@ const fetchUser = async ()=> {
   return  user;
 };
 
-
+const Vacations = ({ vacations })=> {
+  return(
+    <ul>
+      {
+        vacations.map((vacation, idx) => {
+          return(
+            <li key={idx}>{vacation.startDate} to {vacation.endDate}</li>
+          )
+        })
+      }
+    </ul>
+  )
+}
 
 function App() {
-  const [ count, setCount ] = useState(0);
   const [user, setUser ] = useState('');
   const [startText, setStartText ] = useState('');
   const [endText, setEndText ] = useState('');
   const [vacations, setVacations ] = useState([]);
 
   async function getUserVacations(user){
-    console.log("In getUserVacations")
-    console.log(user);
     const vacationsAPI = `${API}/users/${user.id}/vacations`;
-    console.log(vacationsAPI);
     const vacations = (await axios.get(`${vacationsAPI}`)).data
-
-    console.log("Vacations for ",user.id, vacations);
     return vacations;
   }
 
   useEffect(()=> {
-    console.log("In useEffect1");
     fetchUser()
     .then( user => setUser(user));
   }, []);
 
   useEffect(()=> {
-    console.log("In useEffect2");
     if( user.id ){
-      getUserVacations(user);
-      return vacations;
+      getUserVacations(user)
+      .then(vacations => setVacations(vacations));
+      return;
     }
-  }, [user]);
-
-  console.log(vacations)
+  }, [user, vacations]);
 
   function createUserVacation (ev) {
     ev.preventDefault();
@@ -68,9 +70,10 @@ function App() {
     }
     console.log("Start: ", startText);
     console.log("End: ", endText);
-    /*
-    axios.post(`${API}/users/${user.id}/vacations`, `${vacation.startDate - vacation.endDate}`)
-    .then( response => setUser([...vacations], response.data]))*/
+
+    axios.post(`${API}/users/${user.id}/vacations`, vacation)
+    .then( response => setUser([...vacations, response.data]))
+    .error()
   }
 
   return (
@@ -79,13 +82,9 @@ function App() {
         <h1>Acme Vacation Planner for {user.fullName}</h1>
         <input value={startText} onChange={(ev)=>setStartText(ev.target.value)}/>
         <input value={endText} onChange={(ev)=>setEndText(ev.target.value)}/>
-        <button onClick={ createUserVacation }>Get User</button>
+        <button onClick={ createUserVacation }>Add Vacation</button>
       </header>
-      <ul>
-        {
-          <li>{user.id}</li>
-        }
-      </ul>
+      <Vacations vacations={vacations}/>
     </div>
   );
 }
